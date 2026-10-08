@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grs-telemetry-decoder"
+version = "0.1.0"
+description = "Decodificador do downlink do FloripaSat-2: raw packets -> NGHam -> telemetria"
+readme = "README.md"
+requires-python = ">=3.11"
+
+# PyNGHam com versão EXATA, e não faixa: o adapter de enlace confere o size
+# tag olhando o estado interno do decodificador (`_decoder_state`), porque a
+# API pública não distingue "size tag não bateu" de "ainda lendo". Uma versão
+# nova pode mudar isso sem aviso. LGPLv3 — ver README.
+#
+# Sem spacelab-tracking e sem ZMQ: este serviço não sabe o que é passagem nem
+# assina detector nenhum. Ele lê mission_control.raw_packets e escreve
+# telemetria. Manter essa ignorância é o que deixa o reprocessamento do
+# histórico ser o mesmo código do tempo real.
+dependencies = [
+    "pyngham==1.1.1",
+    "SQLAlchemy>=2.0,<3.0",
+    "psycopg2-binary>=2.9",
+    "Flask>=3.0,<4.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0,<9.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# tests/ também: frames.py é a fábrica de quadros que todos os testes usam.
+pythonpath = ["src", "tests"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
