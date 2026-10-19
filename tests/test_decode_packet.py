@@ -35,14 +35,14 @@ def test_radio_errado_decodifica_e_avisa():
 
 
 def test_tipo_conhecido_sem_decoder_fica_guardado():
-    """O 0x13 (TC Feedback) ainda não tem decoder. O pacote não se perde: fica
+    """O 0x14 (Param Value) ainda não tem decoder. O pacote não se perde: fica
     em decoded_frames com o payload, para o reprocessamento de amanhã."""
-    packet = fsat(0x13, b"\x47\xff\xff\xff\xfe")
+    packet = fsat(0x14, b"\x47\xff\xff\xff\xfe")
 
     outcome = decode(ngham_slice(packet))
 
     assert outcome.frame.status is FrameStatus.NOT_IMPLEMENTED
-    assert outcome.frame.pkt_type == "tc_feedback"
+    assert outcome.frame.pkt_type == "param_value"
     assert outcome.frame.ngham_payload == packet
     assert outcome.record is None
 

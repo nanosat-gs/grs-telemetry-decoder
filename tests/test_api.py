@@ -53,7 +53,8 @@ def test_catalogo_mostra_todos_os_tipos_e_quem_tem_decoder():
     assert len(types) == 9
     assert types["general_telemetry"]["decoder"] is True
     assert types["general_telemetry"]["expected_radio"] == "uhf"
-    assert types["tc_feedback"]["decoder"] is False
+    assert types["tc_feedback"]["decoder"] is True
+    assert types["param_value"]["decoder"] is False
 
 
 def test_latest_converte_unidades_e_guarda_o_cru():
@@ -96,7 +97,7 @@ def test_historico_com_limite():
 @pytest.mark.parametrize("url, status", [
     ("/api/telemetry/fs9/general_telemetry/latest", 404),
     ("/api/telemetry/fs2/nao_existe/latest", 404),
-    ("/api/telemetry/fs2/tc_feedback/latest", 501),
+    ("/api/telemetry/fs2/param_value/latest", 501),
     ("/api/telemetry/fs2/general_telemetry?limit=0", 400),
     ("/api/telemetry/fs2/general_telemetry?limit=abc", 400),
     ("/api/telemetry/fs2/general_telemetry?limit=5000", 400),

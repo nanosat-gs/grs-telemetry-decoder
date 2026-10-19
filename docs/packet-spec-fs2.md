@@ -90,11 +90,11 @@ Todos os pacotes, de downlink e de uplink, têm o mesmo cabeçalho. Fonte: `fsat
 |---|---|---|---|---|
 | `0x00` | EPS Beacon (`eps_beacon`) | VHF (beacon) | Beacon do EPS2: **65 B** | — |
 | `0x01` | Message Broadcast (`message_broadcast`) | — | Mensagem repassada | — |
-| `0x02` | Ping Answer (`ping_answer`) | `TTC_1` = VHF | Ecoa os 7 bytes do ping | — |
+| `0x02` | Ping Answer (`ping_answer`) | `TTC_1` = VHF | Ecoa os 7 bytes do ping: **15 B** | **sim** |
 | `0x10` | **General Telemetry** (`general_telemetry`) | `TTC_0` = UHF | Saúde do satélite: **111 B** (§4) | **sim** |
 | `0x11` | Data Request Answer (`data_request_answer`) | `TTC_0` = UHF | Página de memória (por `data_id`) | — |
 | `0x12` | Subsystem Table (`subsystem_table`) | — | Tabela de um subsistema (por `table_id`) | — |
-| `0x13` | TC Feedback (`tc_feedback`) | — | Sucesso/erro de um telecomando (§6) | — |
+| `0x13` | TC Feedback (`tc_feedback`) | `TTC_0` = UHF | Quem pediu, ID do TC, relógio, erro `int16`: **22 B** (§6) | **sim** |
 | `0x14` | Param Value (`param_value`) | — | Valor de um parâmetro | — |
 | `0x15` | Packet Broadcast (`packet_broadcast`) | — | Pacote repassado | — |
 

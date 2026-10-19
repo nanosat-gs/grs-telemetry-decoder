@@ -41,8 +41,8 @@ class MemoryStore:
 
 
 def mixed(n):
-    """n pacotes alternando os casos: GT pelo UHF, TC Feedback, lixo."""
-    payloads = [ngham_slice(general_telemetry()), ngham_slice(fsat(0x13, b"\x47\x00")), junk(255)]
+    """n pacotes alternando os casos: GT pelo UHF, Param Value (sem decoder), lixo."""
+    payloads = [ngham_slice(general_telemetry()), ngham_slice(fsat(0x14, b"\x47\x00")), junk(255)]
     return [raw_packet(payloads[i % 3], id=i + 1, radio="uhf") for i in range(n)]
 
 

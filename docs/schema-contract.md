@@ -90,7 +90,15 @@ Valores de `status`:
 
 ### `fs2_<tipo>`: uma tabela por tipo de pacote
 
-Nesta versão, só `fs2_general_telemetry`. O cabeçalho é comum a todas as tabelas de tipo:
+Nesta versão:
+
+| Tabela | Tipo | Desde |
+|---|---|---|
+| `fs2_general_telemetry` | `0x10` General Telemetry | 0.1.0 |
+| `fs2_ping_answer` | `0x02` Ping Answer (pong) | 0.2.0 |
+| `fs2_tc_feedback` | `0x13` TC Feedback | 0.2.0 |
+
+O cabeçalho é comum a todas as tabelas de tipo:
 
 | Coluna | Tipo |
 |---|---|
@@ -107,6 +115,7 @@ campo:
 | `uint8`, `int8`, `int16` | `SMALLINT` |
 | `uint16`, `int32` | `INTEGER` |
 | `uint32` | `BIGINT` |
+| `char[7]` (indicativo, formato `7s`) | `TEXT`, sem o preenchimento |
 
 **O valor gravado é o inteiro do satélite**, sem conversão de unidade.
 
@@ -123,6 +132,20 @@ do que diverge, e a migração é decisão de alguém.
 - As leituras da API filtram pela versão atual.
 - Subir a versão é o jeito de levar uma correção de layout aos pacotes que já estavam no
   banco, e de transformar os `not_implemented` de ontem em telemetria.
+
+## Quem mais lê estas tabelas
+
+O **TC Scheduler** (módulo `tc_lifecycle`) lê `decoded_frames` e `fs2_tc_feedback` para
+casar cada resposta do satélite com o telecomando que a provocou e mudar o status dele.
+Ver `uplink-pares-e-estados-fs2.md` §3.
+
+| Tabela | Colunas que ele lê |
+|---|---|
+| `decoded_frames` | `id`, `raw_packet_id`, `decoder_version`, `received_at`, `radio`, `status`, `ngham_payload`, `pkt_id`, `sat_profile`, `detail` |
+| `fs2_tc_feedback` | `decoded_frame_id`, `requester_callsign`, `tc_id`, `error_code` |
+
+Renomear ou remover alguma dessas quebra o casamento. O `schema_check` do Scheduler
+confere no boot dele.
 
 ## O que serve: API HTTP (`:5592`, só `127.0.0.1` no host)
 

@@ -16,6 +16,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
+from telemetry_decoder.domain.fsat_packet import CALLSIGN_LENGTH, normalize_callsign
 from telemetry_decoder.domain.models import FsatPacket, TelemetryRecord
 
 # Formatos aceitos (módulo struct, sempre big-endian — spec §2) e o que cada
@@ -28,6 +29,9 @@ SQL_TYPES: Mapping[str, str] = {
     "h": "SMALLINT",    # int16
     "I": "BIGINT",      # uint32
     "i": "INTEGER",     # int32
+    # Indicativo de 7 bytes (`char[7]`), como o do cabeçalho: o "callsign de
+    # quem pediu" que toda resposta a telecomando traz.
+    f"{CALLSIGN_LENGTH}s": "TEXT",
 }
 
 _IDENTIFIER = re.compile(r"^[a-z][a-z0-9_]*$")
@@ -59,8 +63,11 @@ class Field:
     def sql_type(self) -> str:
         return SQL_TYPES[self.fmt]
 
-    def read(self, raw: bytes) -> int:
-        return struct.unpack_from(">" + self.fmt, raw, self.offset)[0]
+    def read(self, raw: bytes) -> int | str:
+        value = struct.unpack_from(">" + self.fmt, raw, self.offset)[0]
+        if isinstance(value, bytes):
+            return normalize_callsign(value)
+        return value
 
 
 @dataclass(frozen=True)

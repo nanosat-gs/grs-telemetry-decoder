@@ -123,7 +123,7 @@ def test_campo_novo_num_decoder_vira_coluna_no_boot(store, engine):
 def test_decodifica_grava_e_nao_refaz(store, engine):
     with engine.begin() as connection:
         gt = insert_raw(connection, store.schema, ngham_slice(general_telemetry()))
-        insert_raw(connection, store.schema, ngham_slice(fsat(0x13, b"\x47\x00")))
+        insert_raw(connection, store.schema, ngham_slice(fsat(0x14, b"\x47\x00")))
         insert_raw(connection, store.schema, junk(258))
 
     assert dict(decode(store).by_status) == {"ok": 1, "not_implemented": 1, "ngham_failed": 1}
@@ -137,7 +137,7 @@ def test_decodifica_grava_e_nao_refaz(store, engine):
     assert row["raw_packet_id"] == gt
     assert (row["eps_battery_current"], row["obdh_latitude"], row["obdh_sbcd_page"]) == (-350, -27, 4_294_967_295)
     assert row["layout"] == "obdh2-111"
-    assert bytes(not_implemented) == fsat(0x13, b"\x47\x00")
+    assert bytes(not_implemented) == fsat(0x14, b"\x47\x00")
 
 
 def test_save_repetido_nao_duplica(store, engine):

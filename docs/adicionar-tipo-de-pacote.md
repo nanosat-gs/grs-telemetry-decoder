@@ -17,8 +17,9 @@ arquivo e o commit.
 
 ## 2. O decoder: `src/telemetry_decoder/domain/packets/<tipo>.py`
 
-Layout fixo é dado, não código. O exemplo abaixo ilustra a forma; o layout real do
-TC Feedback ainda não foi levantado:
+Layout fixo é dado, não código. O exemplo é o do TC Feedback
+(`src/telemetry_decoder/domain/packets/tc_feedback.py`), levantado do `send_tc_feedback`
+do `process_tc.c`:
 
 ```python
 from telemetry_decoder.domain.packets.base import Field, FixedLayoutDecoder
@@ -26,8 +27,10 @@ from telemetry_decoder.domain.satellite_enums import DownlinkId
 
 FIELDS = (
     # offset contado do INÍCIO do pacote (coluna "Frame" da spec), big-endian
-    Field("tc_id", 8, "B", "", "Telecomando a que o feedback responde (UplinkId)"),
-    Field("tc_result", 9, "b", "", "Código de resultado (TcFeedbackCode)"),
+    Field("requester_callsign", 8, "7s", "", "Indicativo de quem mandou o telecomando"),
+    Field("tc_id", 15, "B", "", "ID do telecomando a que o feedback responde (UplinkId)"),
+    Field("sat_timestamp", 16, "I", "s", "Relógio do satélite na execução"),
+    Field("error_code", 20, "h", "", "Resultado: 0 sucesso, negativo = erro (TcFeedbackCode)"),
 )
 
 DECODER = FixedLayoutDecoder(
@@ -35,13 +38,14 @@ DECODER = FixedLayoutDecoder(
     packet_type=DownlinkId.TC_FEEDBACK.packet_type,   # "tc_feedback"
     table="fs2_tc_feedback",
     fields=FIELDS,
-    layouts={10: "obdh2-10"},       # comprimento total -> nome do layout
-    source="obdh2 firmware/app/tasks/process_tc.c (commit ...)",
+    layouts={22: "obdh2-22"},       # comprimento total -> nome do layout
+    sat_time_field="sat_timestamp",
+    source="obdh2 firmware/app/tasks/process_tc.c, send_tc_feedback (v1.0, 3f0ad36)",
 )
 ```
 
-- **Formatos:** `B` uint8, `b` int8, `H` uint16, `h` int16, `I` uint32, `i` int32. Cada um
-  define o tipo da coluna.
+- **Formatos:** `B` uint8, `b` int8, `H` uint16, `h` int16, `I` uint32, `i` int32, e `7s` para
+  um indicativo de 7 bytes (vira texto sem o preenchimento). Cada um define o tipo da coluna.
 - **Unidades:** `K`, `mV`, `mA`, `s` (epoch), `%`, `deg`, `km`. Unidade nova precisa de uma
   linha em `domain/units.py`, ou sai crua na API.
 - **`sat_time_field`:** o campo que tem o relógio do satélite, se houver.

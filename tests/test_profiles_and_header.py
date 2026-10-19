@@ -25,11 +25,11 @@ def test_menos_que_o_cabecalho_nao_e_pacote():
     assert fsat_packet.parse(b"\x10 PY0EF") is None
 
 
-def test_fs2_conhece_todos_os_ids_de_downlink_e_decodifica_so_o_0x10():
+def test_fs2_conhece_todos_os_ids_de_downlink_e_decodifica_os_implementados():
     assert set(FS2.packet_types) == {member.value for member in DownlinkId}
-    assert set(FS2.decoders) == {0x10}
-    assert FS2.packet_type(0x13) == "tc_feedback"
-    assert FS2.decoder(0x13) is None
+    assert set(FS2.decoders) == {0x02, 0x10, 0x13}
+    assert FS2.packet_type(0x14) == "param_value"
+    assert FS2.decoder(0x14) is None
 
 
 def test_nomes_de_tabela_unicos_e_com_prefixo_do_satelite():
@@ -54,7 +54,8 @@ def test_fs1_so_quando_forcado():
     (0x10, "uhf", False),
     (0x10, "vhf", True),
     (0x00, "vhf", False),
-    (0x13, "vhf", False),   # rádio do TC Feedback não está na spec
+    (0x13, "vhf", True),    # o TC Feedback sai pelo TTC_0 (UHF)
+    (0x14, "vhf", False),   # rádio do Param Value não está no perfil
     (0x10, None, False),    # linhas antigas, de antes da coluna radio
 ])
 def test_radio_esperado(pkt_id, radio, mismatch):

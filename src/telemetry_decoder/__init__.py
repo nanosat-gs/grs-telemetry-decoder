@@ -4,4 +4,4 @@
 # tratar todo o histórico como pendente e decodificá-lo de novo, ao lado das
 # linhas antigas (UNIQUE (raw_packet_id, decoder_version)). É assim que uma
 # correção de layout chega aos pacotes que já estavam no banco.
-DECODER_VERSION = "0.1.0"
+DECODER_VERSION = "0.2.0"

@@ -11,7 +11,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from types import MappingProxyType
 
-from telemetry_decoder.domain.packets import general_telemetry
+from telemetry_decoder.domain.packets import general_telemetry, ping_answer, tc_feedback
 from telemetry_decoder.domain.ports import PacketDecoder
 from telemetry_decoder.domain.satellite_enums import DownlinkId
 
@@ -67,9 +67,13 @@ FS2 = MissionProfile(
         DownlinkId.PING_ANSWER: "vhf",
         DownlinkId.GENERAL_TELEMETRY: "uhf",
         DownlinkId.DATA_REQUEST_ANSWER: "uhf",
+        # send_tc_feedback transmite pelo TTC_0 (process_tc.c v1.0).
+        DownlinkId.TC_FEEDBACK: "uhf",
     }),
     decoders=MappingProxyType({
         DownlinkId.GENERAL_TELEMETRY: general_telemetry.DECODER,
+        DownlinkId.PING_ANSWER: ping_answer.DECODER,
+        DownlinkId.TC_FEEDBACK: tc_feedback.DECODER,
     }),
 )
 

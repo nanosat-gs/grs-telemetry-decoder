@@ -89,15 +89,15 @@ class FsatPacket:
 
 @dataclass(frozen=True)
 class TelemetryRecord:
-    """Os campos de um tipo de pacote, como inteiros — sem conversão de
-    unidade, que fica para a leitura."""
+    """Os campos de um tipo de pacote, como inteiros (indicativos como texto)
+    — sem conversão de unidade, que fica para a leitura."""
 
     packet_type: str
     layout: str
     sat_time: datetime | None
     # None = campo que este layout não traz (o 0x10 de 105 bytes não tem os
     # três últimos campos do de 111).
-    values: dict[str, int | None]
+    values: dict[str, int | str | None]
 
 
 @dataclass(frozen=True)
